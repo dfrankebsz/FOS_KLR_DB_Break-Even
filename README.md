@@ -1,22 +1,109 @@
-# DB Mission – UrbanMove Leipzig
+# DB Quest – RideLab Leipzig
 
-Interaktiver Lernkurs zu Kostenrechnung, Deckungsbeitrag und Break-even-Analyse.
+Interaktiver Lernkurs zu **fixen und variablen Kosten, Teilkostenrechnung, absolutem Deckungsbeitrag, Kostenauflösung und Break-even-Analyse**.
 
-## Deployment über GitHub + Netlify
-1. Den Inhalt dieses ZIP in ein neues GitHub-Repository hochladen.
-2. In Netlify **Add new site → Import an existing project → GitHub** wählen und das Repository verbinden.
-3. Build command leer lassen. Publish directory: `.`. Functions directory wird über `netlify.toml` gesetzt.
-4. In Netlify unter **Site configuration → Environment variables** genau eine Variable anlegen: `TEACHER_CODE`. Als Wert Ihren gewünschten Lehrer-Code eintragen. Es ist kein allgemeiner AUTH-Schlüssel nötig.
-5. Deploy ausführen. Netlify Functions und Netlify Blobs werden beim ersten Gebrauch automatisch verwendet.
+## Inhalt
 
-## Konten
-- Schüler registrieren sich mit Nickname, Passwort und Klasse.
-- Lehrer registrieren sich ebenfalls mit Nickname, Passwort und Klasse, wählen „Lehrer/in“ und geben zusätzlich den in Netlify hinterlegten `TEACHER_CODE` ein.
-- Lehrer sehen nur Schüler derselben Klasse.
-- Gastmodus funktioniert ohne Serverkonto; der Fortschritt bleibt im Browser (localStorage).
+- 6 Kapitel / 12 Lernlektionen
+- 48 Kernaufgaben
+- 6 Bonusmissionen
+- interne Aufgabenverteilung: 25 % Grundlagen, 50 % Anwendung/Transfer, 25 % Beurteilung/Problemlösung
+- viele Aufgabenformate: Zahlenaufgaben, Single Choice, Multiple Choice, Richtig/Falsch, Zuordnung, Drag & Drop, Reihenfolge und Freitext mit Selbsteinschätzung
+- ausführliche Erklärungen, Definitionen, Rechenbeispiele und Schaubilder
+- die vier bereitgestellten Diagramme sind in die Erklärungen integriert
+- XP, Abzeichen, Themes, Avatare und Begleiter
+- Gastmodus ohne Anmeldung
+- Schülerkonten mit Nickname + Passwort + Klasse
+- Lehrerkonten mit Nickname + Passwort + Klasse + geheimem Lehrer-Code
+- klassenbezogener Lehrerbereich
+- Passwort-Reset, Nutzer löschen, einzelnen oder gesamten Klassenfortschritt zurücksetzen
+- geräteübergreifender Lernfortschritt über Netlify Blobs
+- responsive Darstellung für Smartphone, Tablet und Desktop
+- PWA-Unterstützung für die statischen Lerninhalte
 
-## Lehrerfunktionen
-Passwort zurücksetzen, Nutzer entfernen, individuellen Fortschritt oder den Fortschritt der gesamten Klasse löschen.
+## Technischer Aufbau
 
-## Sicherheitshinweis
-Passwörter werden serverseitig mit Node `scrypt` plus individuellem Salt gehasht. Sessions verwenden zufällige Tokens in Netlify Blobs. Für einen schulischen Lernkurs ist dies eine schlanke Architektur; für besonders sensible Daten wäre ein dedizierter Identity-Provider vorzuziehen.
+- Frontend: HTML, CSS und Vanilla JavaScript
+- Backend: Netlify Function `netlify/functions/api.mjs`
+- Datenspeicherung: Netlify Blobs
+- keine Supabase-Datenbank
+- kein allgemeiner AUTH-Schlüssel erforderlich
+- Sitzungen werden mit kryptografisch zufälligen Session-Tokens verwaltet
+- Passwörter werden mit Node.js `scrypt` und individuellem Salt gehasht
+- Blob-Stores werden explizit in `eu-central-1` (Frankfurt) geöffnet
+
+## Deployment über GitHub und Netlify
+
+1. ZIP-Datei entpacken.
+2. **Den Inhalt des Ordners** in ein neues GitHub-Repository hochladen. `netlify.toml`, `package.json`, `public/` und `netlify/` müssen im Repository-Stamm liegen.
+3. In Netlify: **Add new project → Import an existing project → GitHub**.
+4. Repository auswählen.
+5. Netlify erkennt über `netlify.toml` automatisch:
+   - Publish-Verzeichnis: `public`
+   - Functions-Verzeichnis: `netlify/functions`
+6. Vor der Nutzung des Lehrerzugangs in Netlify eine Umgebungsvariable anlegen:
+
+   **Name:** `TEACHER_CODE`
+
+   **Wert:** ein eigener geheimer Lehrer-Code, z. B. eine lange zufällige Zeichenfolge.
+
+7. Danach neu deployen.
+
+Es wird **keine** Variable wie `AUTH`, `AUTH_SECRET` oder eine externe SQL-Datenbank benötigt.
+
+## Anmeldung
+
+### Schülerkonto
+
+Schülerinnen und Schüler geben bei Registrierung und Anmeldung an:
+
+- Klasse
+- selbst gewählten Nickname
+- selbst gewähltes Passwort
+
+Ein Nickname muss nur innerhalb derselben Klasse und Rolle eindeutig sein.
+
+### Lehrerkonto
+
+Lehrkräfte wählen bei der Registrierung „Lehrkraft“ und geben zusätzlich den in Netlify hinterlegten `TEACHER_CODE` ein. Das Lehrerkonto wird genau der angegebenen Klasse zugeordnet und sieht nur Schülerkonten dieser Klasse.
+
+## Lehrerbereich
+
+Im Lehrerbereich können Sie:
+
+- Lernfortschritt der Klasse ansehen
+- Fortschritt eines einzelnen Kontos löschen
+- den Fortschritt der gesamten Klasse zurücksetzen
+- für ein Schülerkonto ein neues Passwort setzen
+- Schülerkonten entfernen
+
+Ein Passwort-Reset macht bestehende Sitzungen dieses Schülerkontos ungültig.
+
+## Gastmodus
+
+Der Kurs ist vollständig ohne Anmeldung nutzbar. Im Gastmodus wird der Fortschritt im Browser über `localStorage` gespeichert. Wird später ein Schülerkonto angelegt oder verwendet, wird der lokale Fortschritt mit dem Cloud-Fortschritt zusammengeführt.
+
+## Inhalt prüfen
+
+Optional lokal:
+
+```bash
+npm run check
+```
+
+Die Prüfung kontrolliert unter anderem, ob alle Kernaufgaben vorhanden sind und die intern gewünschte Verteilung der Anforderungsniveaus eingehalten wird. Diese Einstufungen werden im Kurs selbst nicht angezeigt.
+
+## Lokal mit Netlify testen
+
+Nach Installation der Abhängigkeiten:
+
+```bash
+npm install
+npx netlify dev
+```
+
+Für Lehrerkonten lokal `TEACHER_CODE` in der lokalen Netlify-Umgebung setzen.
+
+## Wichtiger Hinweis zur Datenhaltung
+
+Netlify Blobs eignet sich für diesen klassenbezogenen Lernkurs und einfache Fortschrittsdaten. Die Anwendung speichert keine Klarnamen; vorgesehen sind Nicknames und Klassenbezeichnungen. Verwenden Sie für den Lehrer-Code eine lange, nicht leicht erratbare Zeichenfolge.
