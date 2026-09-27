@@ -1,0 +1,9 @@
+{
+  "name": "DB Mission – UrbanMove Leipzig",
+  "short_name": "DB Mission",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#111827",
+  "icons": []
+}

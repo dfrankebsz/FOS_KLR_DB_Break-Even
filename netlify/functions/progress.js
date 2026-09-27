@@ -1,0 +1,1 @@
+const {json,userByToken,putUser}=require('./_shared');exports.handler=async(e)=>{try{let t=(e.headers.authorization||'').replace(/^Bearer /,'');let u=await userByToken(t);if(!u)return json(401,{error:'Nicht angemeldet.'});let b=JSON.parse(e.body||'{}');u.progress=b.progress||u.progress;await putUser(u);return json(200,{ok:true})}catch(err){return json(500,{error:err.message})}};
